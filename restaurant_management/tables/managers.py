@@ -5,10 +5,15 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.db import models
 
+from restaurant_management.tables import models as model_tables
+
+from .enums import ReservationStatusEnum
+
 if TYPE_CHECKING:
+    from datetime import time
     from decimal import Decimal
 
-    from .models import TableCountSingleton
+    from .models import Table, TableCountSingleton
 
 
 class SeatCostManager(models.Manager):
@@ -60,3 +65,32 @@ class TableCountManager(models.Manager):
         if obj.count > 0:
             obj.count -= 1
             obj.save()
+
+
+class ReservationManager(models.Manager):
+    def find_cheapest_table(
+        self,
+        seats_reserved: int,
+        start_time: time,
+        end_time: time,
+    ) -> Table:
+        """
+        This is a method to find the best or cheapest table for the user.
+
+        *Tip: This is not good in the real world, the user should choose the
+              table themselves, not us choosing it for them, but we implement
+              this method according to the project's requirements.
+        """
+        cheapest_tables = (
+            model_tables.Table.objects.filter(
+                seats__gte=seats_reserved,
+            )
+            .exclude(
+                table_reservations__status=ReservationStatusEnum.ACTIVE.name,
+                table_reservations__start_time__lt=end_time,
+                table_reservations__end_time__gt=start_time,
+            )
+            .order_by("seats")
+        )
+
+        return cheapest_tables.first()  # type: ignore

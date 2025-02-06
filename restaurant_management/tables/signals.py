@@ -1,9 +1,7 @@
-from django.db.models.signals import post_delete
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .models import Table
-from .models import TableCountSingleton
+from .models import Table, TableCountSingleton
 
 
 @receiver(post_save, sender=Table)

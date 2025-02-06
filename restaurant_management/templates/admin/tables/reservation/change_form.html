@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+  {{ block.super }}
+  {% if change %}
+    <div class="submit-row">
+      {% if original.status == active_status %}
+        <input type="button"
+               id="btn-cancelled-reservation"
+               value="Canceled Reservation" />
+      {% endif %}
+      <script>
+        (function($) {
+          $(document).ready(function() {
+            $('#btn-cancelled-reservation').click(function(event) {
+              var confirmSave = confirm("Are you sure you want to cancelled this reservation?");
+              if (confirmSave) {
+                window.open('{% url "admin:tables_reservation_cancelled_reservation" reservation_id=original.pk %}', '_self');
+              }
+            });
+          });
+        })(django.jQuery);
+      </script>
+    </div>
+  {% endif %}
+{% endblock submit_buttons_bottom %}
