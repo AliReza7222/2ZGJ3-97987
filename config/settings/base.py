@@ -84,8 +84,9 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "restaurant_management.base",
     "restaurant_management.users",
-    # Your stuff: custom apps go here
+    "restaurant_management.tables",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -313,5 +314,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
     "SCHEMA_PATH_PREFIX": "/api/",
 }
-# Your stuff...
+#
 # ------------------------------------------------------------------------------
+SEAT_COST = env("SEAT_COST", default=100)
+TABLE_COUNT = env("TABLE_COUNT", default=10)
