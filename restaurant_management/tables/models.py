@@ -1,14 +1,12 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from restaurant_management.base.models import SingletonBaseModel
 
 from .enums import ReservationStatusEnum
-from .managers import SeatCostManager
-from .managers import TableCountManager
+from .managers import ReservationManager, SeatCostManager, TableCountManager
 from .validators import even_number_validator
 
 User = get_user_model()
@@ -55,7 +53,7 @@ class Table(models.Model):
     )
 
     def __str__(self):
-        return f"table with {self.seats} seats"
+        return f"table {self.id} with {self.seats} seats"
 
 
 class Reservation(models.Model):
@@ -71,7 +69,10 @@ class Reservation(models.Model):
         related_name="table_reservations",
         verbose_name=_("Table"),
     )
-    seats_reserved = models.PositiveIntegerField(default=4)
+    seats_reserved = models.PositiveIntegerField(
+        default=4,
+        validators=[MaxValueValidator(10)],
+    )
     total_cost = models.DecimalField(max_digits=10, decimal_places=2)
 
     # We simply assume that all reservations are for a day.
@@ -85,5 +86,7 @@ class Reservation(models.Model):
         verbose_name=_("Reservation status"),
     )
 
+    objects = ReservationManager()
+
     def __str__(self):
-        return f"{self.reservation_by}-{self.status}"
+        return f"{self.reservation_by}"

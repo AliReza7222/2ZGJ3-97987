@@ -133,6 +133,3 @@ ignore = [
 extend-unsafe-fixes = [
     "UP038",
 ]
-
-[tool.ruff.lint.isort]
-force-single-line = true
