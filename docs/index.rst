@@ -7,10 +7,11 @@ Welcome to restaurant_management's documentation!
 ======================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    howto
+   tables
    users
 
 
