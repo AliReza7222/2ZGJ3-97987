@@ -11,6 +11,16 @@ License: MIT
 
 Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getting-started/settings.html).
 
+## Docs
+
+We use Sphinx for documenting the project. It has it's own docker compose. To see it, simply run:
+
+```bash
+docker compose -f docker-compose.docs.yml up -d
+```
+
+Then you can visit [docs page](http://0.0.0.0:9000)
+
 ## Basic Commands
 
 ### Setting Up Your Users
@@ -22,6 +32,26 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
       $ python manage.py createsuperuser
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+
+### Run Project
+
+- To run the project locally, use Docker Compose. Simply execute the following command:
+
+```bash
+docker compose -f local.yml up -d
+```
+
+- you can createsuper user with command:
+
+```bash
+docker compose -f local.yml run django python manage.py createsuperuser
+```
+
+### Documenting Swagger
+
+- You can view the API documentation via Swagger at the following address:
+
+- you can visit [swagger page](http://0.0.0.0:8000/api/docs)
 
 ### Type checks
 
@@ -44,6 +74,33 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 ### Live reloading and Sass CSS compilation
 
 Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/2-local-development/developing-locally.html#using-webpack-or-gulp).
+
+### Celery
+
+This app comes with Celery.
+
+To run a celery worker:
+
+```bash
+cd restaurant_management
+celery -A config.celery_app worker -l info
+```
+
+Please note: For Celery's import magic to work, it is important _where_ the celery commands are run. If you are in the same folder with _manage.py_, you should be right.
+
+To run [periodic tasks](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html), you'll need to start the celery beat scheduler service. You can start it as a standalone process:
+
+```bash
+cd restaurant_management
+celery -A config.celery_app beat
+```
+
+or you can embed the beat service inside a worker with the `-B` option (not recommended for production use):
+
+```bash
+cd restaurant_management
+celery -A config.celery_app worker -B -l info
+```
 
 ### Sentry
 
