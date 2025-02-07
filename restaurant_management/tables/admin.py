@@ -28,6 +28,7 @@ class ReservationAdmin(admin.ModelAdmin):
     form = ReservationForm
     list_display = ("reservation_by", "table", "start_time", "end_time", "status")
     autocomplete_fields = ("reservation_by",)
+    list_per_page = 10
     fieldsets = (
         ("General", {"fields": ("reservation_by", "seats_reserved")}),
         ("Reservation Time", {"fields": ("start_time", "end_time")}),

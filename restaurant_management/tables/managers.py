@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 from restaurant_management.tables import models as model_tables
 
@@ -86,11 +87,12 @@ class ReservationManager(models.Manager):
                 seats__gte=seats_reserved,
             )
             .exclude(
-                table_reservations__status=ReservationStatusEnum.ACTIVE.name,
-                table_reservations__start_time__lt=end_time,
-                table_reservations__end_time__gt=start_time,
+                Q(table_reservations__status=ReservationStatusEnum.ACTIVE.name)
+                & Q(table_reservations__start_time__lt=end_time)
+                & Q(table_reservations__end_time__gt=start_time),
             )
             .order_by("seats")
+            .distinct()
         )
 
         return cheapest_tables.first()  # type: ignore

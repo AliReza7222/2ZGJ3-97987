@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from restaurant_management.users.api.views import UserViewSet
+from restaurant_management.users.api.views import UserRetrievingViewSet
 from restaurant_management.users.models import User
 
 
@@ -11,7 +11,7 @@ class TestUserViewSet:
         return APIRequestFactory()
 
     def test_get_queryset(self, user: User, api_rf: APIRequestFactory):
-        view = UserViewSet()
+        view = UserRetrievingViewSet()
         request = api_rf.get("/fake-url/")
         request.user = user
 
@@ -20,7 +20,7 @@ class TestUserViewSet:
         assert user in view.get_queryset()
 
     def test_me(self, user: User, api_rf: APIRequestFactory):
-        view = UserViewSet()
+        view = UserRetrievingViewSet()
         request = api_rf.get("/fake-url/")
         request.user = user
 

@@ -1,6 +1,7 @@
 # ruff: noqa: ERA001, E501
 """Base settings to build other settings files upon."""
 
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -73,12 +74,12 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
+    "rest_framework_simplejwt",
     "allauth",
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
     "rest_framework",
-    "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
 ]
@@ -296,10 +297,12 @@ SOCIALACCOUNT_FORMS = {
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -311,8 +314,14 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "restaurant_management API",
     "DESCRIPTION": "Documentation of API endpoints of restaurant_management",
     "VERSION": "1.0.0",
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
     "SCHEMA_PATH_PREFIX": "/api/",
+}
+
+# Customizing Simple JWT behavior like access token lifetime
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 #
 # ------------------------------------------------------------------------------
