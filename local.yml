@@ -3,10 +3,11 @@ version: '3'
 volumes:
   restaurant_management_local_postgres_data: {}
   restaurant_management_local_postgres_data_backups: {}
+  restaurant_management_local_redis_data: {}
 
 
 services:
-  django:
+  django: &django
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
@@ -34,3 +35,38 @@ services:
       - restaurant_management_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
+
+  redis:
+    image: docker.io/redis:6
+    container_name: restaurant_management_local_redis
+
+    volumes:
+      - restaurant_management_local_redis_data:/data
+
+  celeryworker:
+    <<: *django
+    image: restaurant_management_local_celeryworker
+    container_name: restaurant_management_local_celeryworker
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: restaurant_management_local_celerybeat
+    container_name: restaurant_management_local_celerybeat
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: restaurant_management_local_flower
+    container_name: restaurant_management_local_flower
+    ports:
+      - '5555:5555'
+    command: /start-flower
