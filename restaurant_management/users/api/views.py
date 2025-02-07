@@ -1,19 +1,20 @@
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin
-from rest_framework.mixins import RetrieveModelMixin
-from rest_framework.mixins import UpdateModelMixin
+from rest_framework.generics import CreateAPIView
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from restaurant_management.users.models import User
 
-from .serializers import UserSerializer
+from .serializers import UserCreateSerializer, UserRetrievingSerializer
 
 
-class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
-    serializer_class = UserSerializer
+class UserRetrievingViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    serializer_class = UserRetrievingSerializer
     queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
     lookup_field = "pk"
 
     def get_queryset(self, *args, **kwargs):
@@ -22,5 +23,13 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
 
     @action(detail=False)
     def me(self, request):
-        serializer = UserSerializer(request.user, context={"request": request})
+        serializer = UserRetrievingSerializer(
+            request.user,
+            context={"request": request},
+        )
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+
+class UserCreateAPIView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
