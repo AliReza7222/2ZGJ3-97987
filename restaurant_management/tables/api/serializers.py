@@ -58,8 +58,8 @@ class ReservationCreatingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     "seats_reserved": _(
-                        "We do not have an available table for the selected \
-                        time and seat count.",
+                        "We do not have an available table for the selected "
+                        "time and seat count.",
                     ),
                 },
             )
@@ -71,10 +71,11 @@ class ReservationCreatingSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
         seat_cost = SeatCostSingleton.objects.get_seat_cost()
 
-        Reservation.objects.create(
+        reservation = Reservation.objects.create(
             reservation_by=user,
             table=self.cheapest_table,
             total_cost=(self.cheapest_table.seats - 1) * seat_cost,
             status=ReservationStatusEnum.ACTIVE.name,
             **validated_data,
         )
+        return reservation  # noqa: RET504
